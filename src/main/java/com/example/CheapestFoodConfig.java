@@ -12,7 +12,6 @@ public interface CheapestFoodConfig extends Config
     )
     default int minHeal()
     {
-        System.out.println("[CheapestFoodConfig] minHeal = 0 (default)");
         return 0;
     }
 
@@ -23,7 +22,6 @@ public interface CheapestFoodConfig extends Config
     )
     default boolean showCostPer10()
     {
-        System.out.println("[CheapestFoodConfig] showCostPer10 = true (default)");
         return true;
     }
 }

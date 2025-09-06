@@ -28,18 +28,15 @@ public class CheapestFoodOverlay extends OverlayPanel
         setPosition(OverlayPosition.TOP_LEFT);
         setPriority(OverlayPriority.HIGH);
         setLayer(OverlayLayer.ABOVE_WIDGETS);
-        setPreferredSize(new Dimension(250, 200));
+
+        panelComponent.setBackgroundColor(new Color(0, 0, 0, 160));
+        panelComponent.setGap(new Point(5, 3));
     }
 
     @Override
     public Dimension render(Graphics2D graphics)
     {
-        if (plugin.getCheapestFoodList().isEmpty())
-        {
-            System.out.println("[CheapestFoodOverlay] Food list is empty");
-            return null;
-        }
-
+        // Always render overlay (GE widget check optional)
         panelComponent.getChildren().clear();
 
         for (CheapestFoodPlugin.FoodPriceInfo food : plugin.getCheapestFoodList())
@@ -52,15 +49,16 @@ public class CheapestFoodOverlay extends OverlayPanel
                 panelComponent.getChildren().add(new ImageComponent(icon));
             }
 
+            String leftText = name + " (" + food.heal + "hp)";
             String rightText = food.price + " gp";
-            if (plugin.showCostPer10())
+            if (plugin.config.showCostPer10())
             {
-                rightText += " (" + String.format("%.1f", food.costPer10) + " /10hp)";
+                rightText += String.format(" (%.1f /10hp)", food.costPer10);
             }
 
             panelComponent.getChildren().add(
                     LineComponent.builder()
-                            .left(name + " (" + food.heal + "hp)")
+                            .left(leftText)
                             .right(rightText)
                             .build()
             );

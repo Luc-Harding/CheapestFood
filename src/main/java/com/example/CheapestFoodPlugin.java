@@ -28,12 +28,17 @@ public class CheapestFoodPlugin extends Plugin
     @Inject private OverlayManager overlayManager;
     @Inject CheapestFoodConfig config;
 
-    private final Map<Integer, Integer> FOOD_HEALS = Map.of(
-            ItemID.MANTA_RAY, 22,
-            ItemID.DARK_CRAB, 22,
-            ItemID.SEA_TURTLE, 21,
-            ItemID.SHARK, 20,
-            ItemID.MONKFISH, 16
+    private final Map<Integer, Integer> FOOD_HEALS = Map.ofEntries(
+            Map.entry(ItemID.PINEAPPLE_PIZZA, 22),
+            Map.entry(ItemID.SUMMER_PIE, 22),
+            Map.entry(ItemID.WILD_PIE, 22),
+            Map.entry(ItemID.MANTA_RAY, 22),
+            Map.entry(ItemID.TUNA_POTATO, 22),
+            Map.entry(ItemID.DARK_CRAB, 22),
+            Map.entry(ItemID.ANGLERFISH, 22),
+            Map.entry(ItemID.SEA_TURTLE, 21),
+            Map.entry(ItemID.SHARK, 20)
+            // Add more foods as desired
     );
 
     private List<FoodPriceInfo> cheapestFoods = new ArrayList<>();
@@ -41,17 +46,17 @@ public class CheapestFoodPlugin extends Plugin
     @Override
     protected void startUp()
     {
-        cheapestFoods.clear();
         overlayManager.add(overlay);
-        System.out.println("[CheapestFoodPlugin] Plugin started");
+        cheapestFoods.clear();
+        System.out.println("[CheapestFoodPlugin] Started");
     }
 
     @Override
     protected void shutDown()
     {
-        cheapestFoods.clear();
         overlayManager.remove(overlay);
-        System.out.println("[CheapestFoodPlugin] Plugin stopped");
+        cheapestFoods.clear();
+        System.out.println("[CheapestFoodPlugin] Stopped");
     }
 
     @Subscribe
@@ -75,13 +80,17 @@ public class CheapestFoodPlugin extends Plugin
 
             if (heal < config.minHeal())
             {
-                System.out.println("[CheapestFoodPlugin] Skipping " + itemId + " (heal " + heal + " < minHeal " + config.minHeal() + ")");
                 continue;
             }
 
             int price = itemManager.getItemPrice(itemId);
-            double costPer10 = price * 10.0 / heal;
+            if (price <= 0)
+            {
+                System.out.println("[CheapestFoodPlugin] Price unavailable for item " + itemId);
+                continue;
+            }
 
+            double costPer10 = price * 10.0 / heal;
             FoodPriceInfo current = cheapest.get(heal);
             if (current == null || costPer10 < current.costPer10)
             {
@@ -91,18 +100,13 @@ public class CheapestFoodPlugin extends Plugin
         }
 
         cheapestFoods = new ArrayList<>(cheapest.values());
-        cheapestFoods.sort(Comparator.comparingInt(FoodPriceInfo::getHeal).reversed());
+        cheapestFoods.sort(Comparator.comparingInt(f -> -f.heal));
         System.out.println("[CheapestFoodPlugin] Food list updated: " + cheapestFoods.size() + " items");
     }
 
     List<FoodPriceInfo> getCheapestFoodList()
     {
         return cheapestFoods;
-    }
-
-    boolean showCostPer10()
-    {
-        return config.showCostPer10();
     }
 
     void openBuyOffer(int itemId)
@@ -129,19 +133,6 @@ public class CheapestFoodPlugin extends Plugin
             this.heal = heal;
             this.price = price;
             this.costPer10 = costPer10;
-        }
-
-        int getHeal() { return heal; }
-
-        @Override
-        public String toString()
-        {
-            return "FoodPriceInfo{" +
-                    "itemId=" + itemId +
-                    ", heal=" + heal +
-                    ", price=" + price +
-                    ", costPer10=" + costPer10 +
-                    '}';
         }
     }
 }
