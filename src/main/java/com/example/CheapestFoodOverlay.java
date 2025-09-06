@@ -69,10 +69,16 @@ public class CheapestFoodOverlay extends net.runelite.client.ui.overlay.OverlayP
 
         if (!doubleHealFoods.isEmpty())
         {
+            // Add a blank line as a separator
+            panelComponent.getChildren().add(LineComponent.builder()
+                    .left(" ") // blank text
+                    .build());
+
             panelComponent.getChildren().add(LineComponent.builder()
                     .left("Two-part heal cheapest")
                     .leftColor(Color.ORANGE)
                     .build());
+
             for (CheapestFoodPlugin.FoodPriceInfo food : doubleHealFoods)
             {
                 addFoodLine(food);

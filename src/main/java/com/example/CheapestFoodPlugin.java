@@ -1,15 +1,14 @@
 package com.example;
 
-import com.google.inject.Provides;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.WidgetID;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.eventbus.Subscribe;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -26,11 +25,11 @@ public class CheapestFoodPlugin extends Plugin
     @Inject private CheapestFoodOverlay overlay;
     @Inject private OverlayManager overlayManager;
 
-    // All food items and their total heal
     private final Map<Integer, Integer> FOOD_HEALS = Map.ofEntries(
             Map.entry(ItemID.PINEAPPLE_PIZZA, 22),
             Map.entry(ItemID.SUMMER_PIE, 22),
             Map.entry(ItemID.WILD_PIE, 22),
+
             Map.entry(ItemID.MANTA_RAY, 22),
             Map.entry(ItemID.TUNA_POTATO, 22),
             Map.entry(ItemID.DARK_CRAB, 22),
@@ -44,7 +43,6 @@ public class CheapestFoodPlugin extends Plugin
     {
         overlayManager.add(overlay);
         cheapestFoods.clear();
-        System.out.println("[CheapestFoodPlugin] Started");
     }
 
     @Override
@@ -52,7 +50,6 @@ public class CheapestFoodPlugin extends Plugin
     {
         overlayManager.remove(overlay);
         cheapestFoods.clear();
-        System.out.println("[CheapestFoodPlugin] Stopped");
     }
 
     @Subscribe
@@ -60,7 +57,6 @@ public class CheapestFoodPlugin extends Plugin
     {
         if (event.getGroupId() == WidgetID.GRAND_EXCHANGE_GROUP_ID)
         {
-            System.out.println("[CheapestFoodPlugin] GE opened, updating food list");
             updateCheapestFoods();
         }
     }
@@ -78,7 +74,6 @@ public class CheapestFoodPlugin extends Plugin
 
             if (price <= 0)
             {
-                System.out.println("[CheapestFoodPlugin] Price unavailable for item " + itemId);
                 continue;
             }
 
@@ -92,7 +87,6 @@ public class CheapestFoodPlugin extends Plugin
                 if (current == null || costPer10 < current.costPer10)
                 {
                     cheapestDouble.put(heal, info);
-                    System.out.println("[CheapestFoodPlugin] Selected (double) " + itemId + " for heal " + heal + " with costPer10 " + costPer10);
                 }
             }
             else
@@ -101,7 +95,6 @@ public class CheapestFoodPlugin extends Plugin
                 if (current == null || costPer10 < current.costPer10)
                 {
                     cheapestSingle.put(heal, info);
-                    System.out.println("[CheapestFoodPlugin] Selected (single) " + itemId + " for heal " + heal + " with costPer10 " + costPer10);
                 }
             }
         }
@@ -110,13 +103,10 @@ public class CheapestFoodPlugin extends Plugin
         cheapestFoods.addAll(cheapestSingle.values());
         cheapestFoods.addAll(cheapestDouble.values());
         cheapestFoods.sort(Comparator.comparingInt(f -> -f.heal));
-
-        System.out.println("[CheapestFoodPlugin] Food list updated: " + cheapestFoods.size() + " items");
     }
 
     private boolean isDoubleHeal(int itemId)
     {
-        // Pies and pizza are double-heal items
         return itemId == ItemID.PINEAPPLE_PIZZA
                 || itemId == ItemID.SUMMER_PIE
                 || itemId == ItemID.WILD_PIE;
@@ -129,7 +119,7 @@ public class CheapestFoodPlugin extends Plugin
 
     void openBuyOffer(int itemId)
     {
-        System.out.println("[CheapestFoodPlugin] Open GE offer for item: " + itemId);
+        // No debug print here
     }
 
     static class FoodPriceInfo
