@@ -117,11 +117,6 @@ public class CheapestFoodPlugin extends Plugin
         return cheapestFoods;
     }
 
-    void openBuyOffer(int itemId)
-    {
-        // No debug print here
-    }
-
     static class FoodPriceInfo
     {
         final int itemId;
