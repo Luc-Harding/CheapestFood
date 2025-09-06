@@ -5,12 +5,11 @@ import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.WidgetID;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.eventbus.Subscribe;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -18,16 +17,16 @@ import java.util.*;
 @PluginDescriptor(
         name = "Cheapest Food",
         description = "Shows cheapest food per heal value when GE is open",
-        tags = {"food", "ge", "prices", "healing"})
+        tags = {"food", "ge", "prices", "healing"}
+)
 public class CheapestFoodPlugin extends Plugin
 {
     @Inject private Client client;
     @Inject private ItemManager itemManager;
     @Inject private CheapestFoodOverlay overlay;
     @Inject private OverlayManager overlayManager;
-    @Inject CheapestFoodConfig config;
 
-    // All food items and their total heal (pies/pizza heal 22 in 2 hits)
+    // All food items and their total heal
     private final Map<Integer, Integer> FOOD_HEALS = Map.ofEntries(
             Map.entry(ItemID.PINEAPPLE_PIZZA, 22),
             Map.entry(ItemID.SUMMER_PIE, 22),
@@ -75,8 +74,8 @@ public class CheapestFoodPlugin extends Plugin
         {
             int itemId = entry.getKey();
             int heal = entry.getValue();
-
             int price = itemManager.getItemPrice(itemId);
+
             if (price <= 0)
             {
                 System.out.println("[CheapestFoodPlugin] Price unavailable for item " + itemId);
@@ -131,12 +130,6 @@ public class CheapestFoodPlugin extends Plugin
     void openBuyOffer(int itemId)
     {
         System.out.println("[CheapestFoodPlugin] Open GE offer for item: " + itemId);
-    }
-
-    @Provides
-    CheapestFoodConfig provideConfig(ConfigManager configManager)
-    {
-        return configManager.getConfig(CheapestFoodConfig.class);
     }
 
     static class FoodPriceInfo

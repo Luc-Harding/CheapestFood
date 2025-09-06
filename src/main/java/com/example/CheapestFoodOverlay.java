@@ -3,12 +3,11 @@ package com.example;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.components.ImageComponent;
 import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -59,10 +58,9 @@ public class CheapestFoodOverlay extends net.runelite.client.ui.overlay.OverlayP
         if (!singleHealFoods.isEmpty())
         {
             panelComponent.getChildren().add(LineComponent.builder()
-                    .left("Single-heal cheapest")
+                    .left("Single heal cheapest")
                     .leftColor(Color.CYAN)
                     .build());
-
             for (CheapestFoodPlugin.FoodPriceInfo food : singleHealFoods)
             {
                 addFoodLine(food);
@@ -72,10 +70,9 @@ public class CheapestFoodOverlay extends net.runelite.client.ui.overlay.OverlayP
         if (!doubleHealFoods.isEmpty())
         {
             panelComponent.getChildren().add(LineComponent.builder()
-                    .left("Double-heal cheapest")
+                    .left("Two-part heal cheapest")
                     .leftColor(Color.ORANGE)
                     .build());
-
             for (CheapestFoodPlugin.FoodPriceInfo food : doubleHealFoods)
             {
                 addFoodLine(food);
@@ -89,11 +86,7 @@ public class CheapestFoodOverlay extends net.runelite.client.ui.overlay.OverlayP
     {
         BufferedImage icon = itemManager.getImage(food.itemId, 1, false);
         String name = itemManager.getItemComposition(food.itemId).getName();
-        String rightText = food.price + " gp";
-        if (plugin.config.showCostPer10())
-        {
-            rightText += String.format(" (%.1f /10hp)", food.costPer10);
-        }
+        String rightText = food.price + " gp"; // Only show total cost
 
         panelComponent.getChildren().add(new ImageComponent(icon));
         panelComponent.getChildren().add(LineComponent.builder()
