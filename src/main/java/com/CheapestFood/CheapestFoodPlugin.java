@@ -1,4 +1,4 @@
-package com.example;
+package com.CheapestFood;
 
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
