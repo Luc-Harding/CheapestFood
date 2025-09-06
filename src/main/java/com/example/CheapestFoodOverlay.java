@@ -3,15 +3,20 @@ package com.example;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.ui.overlay.*;
+import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.components.ImageComponent;
 import net.runelite.client.ui.overlay.components.LineComponent;
+import net.runelite.client.ui.overlay.components.PanelComponent;
 
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class CheapestFoodOverlay extends OverlayPanel
+public class CheapestFoodOverlay extends net.runelite.client.ui.overlay.OverlayPanel
 {
     private final Client client;
     private final CheapestFoodPlugin plugin;
@@ -29,43 +34,72 @@ public class CheapestFoodOverlay extends OverlayPanel
         setPriority(OverlayPriority.HIGH);
         setLayer(OverlayLayer.ABOVE_WIDGETS);
 
-        panelComponent.setBackgroundColor(new Color(0, 0, 0, 160));
-        panelComponent.setGap(new Point(5, 3));
+        panelComponent.setBackgroundColor(new Color(0, 0, 0, 150));
+        panelComponent.setPreferredSize(new Dimension(220, 0));
     }
 
     @Override
     public Dimension render(Graphics2D graphics)
     {
-        // Always render overlay (GE widget check optional)
+        if (client.getWidget(WidgetInfo.GRAND_EXCHANGE_WINDOW_CONTAINER) == null)
+        {
+            return null;
+        }
+
         panelComponent.getChildren().clear();
 
-        for (CheapestFoodPlugin.FoodPriceInfo food : plugin.getCheapestFoodList())
+        List<CheapestFoodPlugin.FoodPriceInfo> singleHealFoods = plugin.getCheapestFoodList().stream()
+                .filter(f -> !f.doubleHeal)
+                .collect(Collectors.toList());
+
+        List<CheapestFoodPlugin.FoodPriceInfo> doubleHealFoods = plugin.getCheapestFoodList().stream()
+                .filter(f -> f.doubleHeal)
+                .collect(Collectors.toList());
+
+        if (!singleHealFoods.isEmpty())
         {
-            String name = itemManager.getItemComposition(food.itemId).getName();
-            BufferedImage icon = itemManager.getImage(food.itemId, 1, false);
+            panelComponent.getChildren().add(LineComponent.builder()
+                    .left("Single-heal cheapest")
+                    .leftColor(Color.CYAN)
+                    .build());
 
-            if (icon != null)
+            for (CheapestFoodPlugin.FoodPriceInfo food : singleHealFoods)
             {
-                panelComponent.getChildren().add(new ImageComponent(icon));
+                addFoodLine(food);
             }
+        }
 
-            String leftText = name + " (" + food.heal + "hp)";
-            String rightText = food.price + " gp";
-            if (plugin.config.showCostPer10())
+        if (!doubleHealFoods.isEmpty())
+        {
+            panelComponent.getChildren().add(LineComponent.builder()
+                    .left("Double-heal cheapest")
+                    .leftColor(Color.ORANGE)
+                    .build());
+
+            for (CheapestFoodPlugin.FoodPriceInfo food : doubleHealFoods)
             {
-                rightText += String.format(" (%.1f /10hp)", food.costPer10);
+                addFoodLine(food);
             }
-
-            panelComponent.getChildren().add(
-                    LineComponent.builder()
-                            .left(leftText)
-                            .right(rightText)
-                            .build()
-            );
-
-            System.out.println("[CheapestFoodOverlay] Rendered: " + name + " | " + rightText);
         }
 
         return super.render(graphics);
+    }
+
+    private void addFoodLine(CheapestFoodPlugin.FoodPriceInfo food)
+    {
+        BufferedImage icon = itemManager.getImage(food.itemId, 1, false);
+        String name = itemManager.getItemComposition(food.itemId).getName();
+        String rightText = food.price + " gp";
+        if (plugin.config.showCostPer10())
+        {
+            rightText += String.format(" (%.1f /10hp)", food.costPer10);
+        }
+
+        panelComponent.getChildren().add(new ImageComponent(icon));
+        panelComponent.getChildren().add(LineComponent.builder()
+                .left(name + " (" + food.heal + "hp)")
+                .leftColor(Color.WHITE)
+                .right(rightText)
+                .build());
     }
 }
