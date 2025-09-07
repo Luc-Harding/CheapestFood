@@ -3,7 +3,7 @@ package com.CheapestFood;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
@@ -29,7 +29,6 @@ public class CheapestFoodPlugin extends Plugin
             Map.entry(ItemID.PINEAPPLE_PIZZA, 22),
             Map.entry(ItemID.SUMMER_PIE, 22),
             Map.entry(ItemID.WILD_PIE, 22),
-
             Map.entry(ItemID.MANTA_RAY, 22),
             Map.entry(ItemID.TUNA_POTATO, 22),
             Map.entry(ItemID.DARK_CRAB, 22),
@@ -55,7 +54,7 @@ public class CheapestFoodPlugin extends Plugin
     @Subscribe
     public void onWidgetLoaded(WidgetLoaded event)
     {
-        if (event.getGroupId() == WidgetID.GRAND_EXCHANGE_GROUP_ID)
+        if (event.getGroupId() == InterfaceID.GRAND_EXCHANGE)
         {
             updateCheapestFoods();
         }
@@ -79,6 +78,7 @@ public class CheapestFoodPlugin extends Plugin
 
             boolean doubleHeal = isDoubleHeal(itemId);
             double costPer10 = price * 10.0 / heal;
+
             FoodPriceInfo info = new FoodPriceInfo(itemId, heal, price, costPer10, doubleHeal);
 
             if (doubleHeal)

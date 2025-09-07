@@ -1,7 +1,7 @@
 package com.CheapestFood;
 
 import net.runelite.api.Client;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -40,7 +40,7 @@ public class CheapestFoodOverlay extends net.runelite.client.ui.overlay.OverlayP
     @Override
     public Dimension render(Graphics2D graphics)
     {
-        if (client.getWidget(WidgetInfo.GRAND_EXCHANGE_WINDOW_CONTAINER) == null)
+        if (client.getWidget(ComponentID.GRAND_EXCHANGE_WINDOW_CONTAINER) == null)
         {
             return null;
         }
@@ -61,6 +61,7 @@ public class CheapestFoodOverlay extends net.runelite.client.ui.overlay.OverlayP
                     .left("Single heal cheapest")
                     .leftColor(Color.CYAN)
                     .build());
+
             for (CheapestFoodPlugin.FoodPriceInfo food : singleHealFoods)
             {
                 addFoodLine(food);
@@ -71,7 +72,7 @@ public class CheapestFoodOverlay extends net.runelite.client.ui.overlay.OverlayP
         {
             // Add a blank line as a separator
             panelComponent.getChildren().add(LineComponent.builder()
-                    .left(" ") // blank text
+                    .left(" ")
                     .build());
 
             panelComponent.getChildren().add(LineComponent.builder()
@@ -92,7 +93,7 @@ public class CheapestFoodOverlay extends net.runelite.client.ui.overlay.OverlayP
     {
         BufferedImage icon = itemManager.getImage(food.itemId, 1, false);
         String name = itemManager.getItemComposition(food.itemId).getName();
-        String rightText = food.price + " gp"; // Only show total cost
+        String rightText = food.price + " gp";
 
         panelComponent.getChildren().add(new ImageComponent(icon));
         panelComponent.getChildren().add(LineComponent.builder()
